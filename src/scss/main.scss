@@ -1,3 +1,17 @@
+@media all and (min-width: 800px) {
+    .list-box {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 100000;
+        width: 400px;
+        padding: 16px;
+        background-color: #fff;
+        overflow: auto;
+        border-left: 1px solid #ccc;
+    }
+}
 .unicode-list {
     overflow: hidden;
     .item {
@@ -12,6 +26,7 @@
         border-radius: 3px;
         border-color: #E5E6E7 #E1E2E3 #DCDDDE;
         font-size: 24px;
+        cursor: pointer;
         &:hover {
             box-shadow: 0 0 6px #C1C2C3;
             border: 1px solid #C5C6C7;

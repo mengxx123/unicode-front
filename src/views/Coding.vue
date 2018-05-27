@@ -6,8 +6,8 @@
                     <div class="tip"><h1></h1></div>
                     <ui-text-field v-model="text" hintText="输入要转换的内容" multiLine :rows="4" :rowsMax="4"/>
                     <div class="btns">
-                        <ui-raised-button class="btn" label="文字转 Unicode" @click="encoder"/>
-                        <ui-raised-button class="btn" label="Unicode 转文字" @click="decode"/>
+                        <ui-raised-button class="btn" primary label="文字转 Unicode" @click="encoder"/>
+                        <ui-raised-button class="btn" secondary label="Unicode 转文字" @click="decode"/>
                         <ui-raised-button class="btn" label="重新输入" @click="clear"/>
                     </div>
                     <ui-text-field v-model="result" multiLine :rows="4" :rowsMax="4" v-if="result"/>

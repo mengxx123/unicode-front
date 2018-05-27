@@ -26,13 +26,14 @@
                 </div>
             </div>
             <div class="col-sm-6">
-                <h2 class="code-list-title">{{ title }}</h2>
-                <ul class="unicode-list" v-if="list">
-                    <li class="item" v-for="item in list" title="">
-                        <span>{{ item }}</span>
-                    </li>
-                </ul>
-
+                <div class="list-box">
+                    <h2 class="code-list-title">{{ title }}</h2>
+                    <ul class="unicode-list" v-if="list">
+                        <li class="item" v-for="item in list" title="" @click="viewUnicode(item)">
+                            <span>{{ item }}</span>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </my-page>
@@ -366,7 +367,11 @@
             this.search()
         },
         methods: {
-            search: function () {
+            viewUnicode(item) {
+                this.keyword = item
+                this.search()
+            },
+            search() {
                 let text = this.keyword.charAt(0)
                 let code = text.charCodeAt(0)
                 let hex = padding0(code.toString(16))
@@ -381,7 +386,7 @@
                     block: t.title + '（' + t.range + '）'
                 }
             },
-            codelist: function ($event, range, title) {
+            codelist($event, range, title) {
                 $event.preventDefault()
                 let arr = range.split('—')
                 let min = parseInt(arr[0], 16)
