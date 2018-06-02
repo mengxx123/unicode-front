@@ -15,9 +15,9 @@
 .unicode-list {
     overflow: hidden;
     .item {
-        display: inline-block;
         float: left;
-        width: 68px;
+        width: 64px;
+        height: 64px;
         margin: 0 12px 13px 0;
         background: #FFF;
         text-align: center;
@@ -37,10 +37,9 @@
         }
     }
     span {
-        line-height: 60px;
+        line-height: 64px;
         display: block;
         font-size: 32px;
-        border-bottom: 1px solid #EAEBEC;
         transition: all .3s;
     }
     a {

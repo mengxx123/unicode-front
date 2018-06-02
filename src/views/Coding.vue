@@ -21,13 +21,16 @@
     function encoder(text) {
         let result = ''
         for (let i = 0; i < text.length; i++) {
+            console.log(text.charCodeAt(i))
             result += '\\u' + text.charCodeAt(i).toString(16)
         }
         return result
     }
 
     function decode(text) {
+        text = text.replace(/"/g, '\\"')
         let jsonstr = '{"ustr": "' + text + '"}'
+        console.log(jsonstr)
         let obj = JSON.parse(jsonstr)
         return obj.ustr
     }
@@ -42,13 +45,13 @@
         mounted() {
         },
         methods: {
-            encoder: function () {
+            encoder() {
                 this.result = encoder(this.text)
             },
-            decode: function () {
+            decode() {
                 this.result = decode(this.text)
             },
-            clear: function () {
+            clear() {
                 this.text = ''
                 this.result = ''
             }

@@ -1,23 +1,38 @@
 <template>
-    <my-page title="Unicode 转换">
-        <div id="input-box" class="row">
-            <div class="col-sm-6">
-                <h3 class="all-text">在这里可以找到所有国家的文字：</h3>
-                <ui-select-field v-model="block" :maxHeight="300">
-                    <ui-menu-item value="" title="无"/>
-                    <ui-menu-item :value="block.range" :title="block.title" v-for="block in getBlocks()" :key="block"/>
-                </ui-select-field>
+    <my-page title="Unicode 查询" :page="page">
+        <section class="search-box">
+            <h2 class=title>特殊符号搜索（找符号、求出处、搜相似）</h2>
+            <ui-text-field v-model="keyword" hintText="输入一个字符或四位编号"/>
+            <br>
+            <div class="btns">
+                <ui-raised-button class="btn" primary label="搜索" @click="search"/>
+                <ui-raised-button class="btn" secondary label="查看字符块" @click="toggleBlock"/>
+            </div>
+        </section>
 
-                <!--<select class="form-control" v-model="block" @change="updateBlock()">-->
-                    <!--<option value="">无</option>-->
-                    <!--<option v-for="block in getBlocks()" v-bind:value="block.range">{{ block.title }}</option>-->
-                <!--</select>-->
-
-                <section class="search-box">
-                    <h2 class=title>特殊符号搜索（找符号、求出处、搜相似）</h2>
-                    <ui-text-field v-model="keyword" hintText="输入一个字符"/>
-                    <ui-raised-button class="btn" label="搜索" @click="search"/>
-                </section>
+        <!-- <h3 class="all-text">在这里可以找到所有国家的文字：</h3>
+        <ui-select-field v-model="block" :maxHeight="300">
+            <ui-menu-item value="" title="无"/>
+            <ui-menu-item :value="block.range" :title="block.title" v-for="block in getBlocks()" :key="block"/>
+        </ui-select-field> -->
+      
+        <ui-drawer class="data-box" right :open="list.length" @close="toggle()">
+            <ui-appbar :title="title">
+                <ui-icon-button icon="close" slot="left" @click="toggle" />
+            </ui-appbar>
+            <div class="body">
+                <ul class="unicode-list" v-if="list">
+                    <li class="item" v-for="item in list" title="" @click="viewUnicode(item)">
+                        <span>{{ item }}</span>
+                    </li>
+                </ul>
+            </div>
+        </ui-drawer>
+        <ui-drawer class="result-box" right :open="resultVisible" @close="toggleResult()">
+            <ui-appbar title="详情">
+                <ui-icon-button icon="close" slot="left" @click="toggleResult" />
+            </ui-appbar>
+            <div class="body">
                 <div class="unicode-card" v-if="searchResult">
                     <div class="text">{{ searchResult.text }}</div>
                     <div class="info">Unicode编号：<code>{{ searchResult.unicode }}</code></div>
@@ -25,17 +40,22 @@
                     <div class="info">Block：<a href="" @click="codelist($event, searchResult.range, searchResult.title)">{{ searchResult.block }}</a> </div>
                 </div>
             </div>
-            <div class="col-sm-6">
-                <div class="list-box">
-                    <h2 class="code-list-title">{{ title }}</h2>
-                    <ul class="unicode-list" v-if="list">
-                        <li class="item" v-for="item in list" title="" @click="viewUnicode(item)">
-                            <span>{{ item }}</span>
-                        </li>
-                    </ul>
-                </div>
+        </ui-drawer>
+        <ui-drawer class="block-box" right :open="blockVisible" @close="toggleBlock()">
+            <ui-appbar title="字符块">
+                <ui-icon-button icon="close" slot="left" @click="toggleBlock" />
+            </ui-appbar>
+            <div class="body">
+                <ui-list>
+                    <ui-list-item
+                        :value="block.range"
+                        :title="block.title"
+                        v-for="block in getBlocks()"
+                        @click="setBlock(block.range)"
+                        :key="block"/>
+                </ui-list>
             </div>
-        </div>
+        </ui-drawer>
     </my-page>
 </template>
 
@@ -355,26 +375,59 @@
                 language: '',
 
                 keyword: 'の',
+                // keyword: '20ac',
                 searchResult: false,
-
+                resultVisible: false,
+                blockVisible: false,
                 title: '',
                 list: [],
-
-                block: ''
+                block: '',
+                page: {
+                    menu: [
+                        {
+                            type: 'icon',
+                            icon: 'help',
+                            title: '帮助',
+                            to: '/unicode/help'
+                        }
+                    ]
+                }
             }
         },
         mounted() {
-            this.search()
+            // this.search()
         },
         methods: {
+            toggle() {
+                this.list = []
+            },
+            toggleResult() {
+                this.resultVisible = !this.resultVisible
+            },
+            toggleBlock() {
+                this.blockVisible = !this.blockVisible
+            },
             viewUnicode(item) {
                 this.keyword = item
+                this.resultVisible = true
                 this.search()
             },
             search() {
-                let text = this.keyword.charAt(0)
-                let code = text.charCodeAt(0)
-                let hex = padding0(code.toString(16))
+                this.resultVisible = true
+
+                let text
+                let code
+                let hex
+                if (this.keyword.length === 4) {
+                    hex = this.keyword.toLowerCase()
+                    text = decode('\\u' + hex)
+                    code = text.charCodeAt(0)
+                } else {
+                    text = this.keyword.charAt(0)
+                    code = text.charCodeAt(0)
+                    hex = padding0(code.toString(16))
+                    console.log(hex)
+                }
 
                 let t = type(code)
                 this.searchResult = {
@@ -387,6 +440,8 @@
                 }
             },
             codelist($event, range, title) {
+                this.resultVisible = false
+
                 $event.preventDefault()
                 let arr = range.split('—')
                 let min = parseInt(arr[0], 16)
@@ -402,24 +457,39 @@
                     this.list.push(decode('\\u' + padding0(i.toString(16))))
                 }
             },
-            getBlocks: function () {
+            getBlocks() {
                 return blocks
             },
-            updateBlock: function (range, title) {
+            getTitleByRange(range) {
+                for (let block of blocks) {
+                    console.log(block, range, block.range === range)
+                    if (block.range === range) {
+                        return block.title
+                    }
+                }
+                return null
+            },
+            updateBlock() {
                 let arr = this.block.split('—')
                 let min = parseInt(arr[0], 16)
                 let max = parseInt(arr[1], 16)
-                this.title = title
+                this.title = this.getTitleByRange(this.block)
+                console.log('this.block', this.block, this.title)
                 this.list = []
                 for (let i = min; i <= max; i++) {
                     this.list.push(decode('\\u' + padding0(i.toString(16))))
                 }
+            },
+            setBlock(range) {
+                // this.blockVisible = false
+                this.block = range
+                this.updateBlock()
             }
         },
         watch: {
-            block() {
-                this.updateBlock()
-            }
+            // block() {
+            //     this.updateBlock()
+            // }
         }
     }
 </script>
@@ -466,5 +536,51 @@
     }
     .all-text {
         margin: 16px 0;
+    }
+    .data-box {
+        width: 100%;
+        max-width: 400px;
+        z-index: 10000;
+        .body {
+            position: absolute;
+            top: 64px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 16px;
+            overflow: auto;
+        }
+    }
+    .result-box {
+        width: 100%;
+        max-width: 400px;
+        z-index: 10000;
+        .body {
+            position: absolute;
+            top: 64px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 16px;
+            overflow: auto;
+        }
+    }
+    .block-box {
+        width: 100%;
+        max-width: 400px;
+        z-index: 1000;
+        .body {
+            position: absolute;
+            top: 64px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: auto;
+        }
+    }
+    .btns {
+        .btn {
+            margin-right: 8px;
+        }
     }
 </style>
