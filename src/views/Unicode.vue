@@ -395,6 +395,11 @@
             }
         },
         mounted() {
+            let data = this.$route.query.data
+            if (data) {
+                this.keyword = data
+                this.search()
+            }
             // this.search()
         },
         methods: {

@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import Home from '@/views/Unicode'
+import Unicode from '@/views/Unicode'
 import Common from '@/views/Common'
 import Emoticons from '@/views/Emoticons'
 import Coding from '@/views/Coding'
@@ -13,7 +13,11 @@ Vue.use(Router)
 let routes = [
     {
         path: '/',
-        component: Home
+        redirect: '/unicode'
+    },
+    {
+        path: '/unicode',
+        component: Unicode
     },
     {
         path: '/unicode/help',

@@ -43,6 +43,10 @@
             }
         },
         mounted() {
+            let data = this.$route.query.data
+            if (data) {
+                this.text = data
+            }
         },
         methods: {
             encoder() {
