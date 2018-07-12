@@ -1,5 +1,5 @@
 <template>
-    <my-page title="Unicode 查询" :page="page">
+    <my-page title="Unicode 查询" :page="_page">
         <section class="search-box">
             <h2 class=title>特殊符号搜索（找符号、求出处、搜相似）</h2>
             <ui-text-field v-model="keyword" hintText="输入一个字符或四位编号"/>
@@ -26,6 +26,10 @@
                         <span>{{ item }}</span>
                     </li>
                 </ul>
+                <div v-if="page < totalPage">
+                    <ui-raised-button label="加载更多" @click="loadMore" />
+                </div>
+                {{ page }} / {{ totalPage }}
             </div>
         </ui-drawer>
         <ui-drawer class="result-box" right :open="resultVisible" @close="toggleResult()">
@@ -375,6 +379,8 @@
                 language: '',
 
                 keyword: 'の',
+                page: 1,
+                totalPage: 1,
                 // keyword: '20ac',
                 searchResult: false,
                 resultVisible: false,
@@ -382,7 +388,7 @@
                 title: '',
                 list: [],
                 block: '',
-                page: {
+                _page: {
                     menu: [
                         {
                             type: 'icon',
@@ -448,18 +454,30 @@
                 this.resultVisible = false
 
                 $event.preventDefault()
+                this._range = range
                 let arr = range.split('—')
                 let min = parseInt(arr[0], 16)
                 let max = parseInt(arr[1], 16)
+                this._min = min
+                this._max = max
                 this.title = title
                 this.list = []
                 console.log(min, max)
-                for (let i = min; i <= max; i++) {
-                    let code = decode('\\u' + padding0(i.toString(16)))
-                    if (code === '぀') {
-                        console.log('1212')
-                    }
+                let total = max - min + 1
+                this.pageSize = 1000
+                this.totalPage = Math.ceil(total / this.pageSize)
+                this.page = 1
+                for (let i = min; i < min + this.pageSize; i++) {
                     this.list.push(decode('\\u' + padding0(i.toString(16))))
+                }
+            },
+            loadMore() {
+                console.log('加载更多')
+                if (this.page < this.totalPage) {
+                    this.page++
+                    for (let i = this._min + (this.page - 1) * this.pageSize; i < this._min + this.page * this.pageSize && i <= this._max; i++) {
+                        this.list.push(decode('\\u' + padding0(i.toString(16))))
+                    }
                 }
             },
             getBlocks() {
