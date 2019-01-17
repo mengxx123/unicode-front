@@ -1,12 +1,14 @@
 <template>
-    <ui-page :title="title || page.title" :page="page" ref="page" :containerMaxWidth="containerMaxWidth">
+    <ui-page :title="title || page.title" :page="page" :backable="backable" ref="page" :containerMaxWidth="containerMaxWidth">
         <div slot="drawer">
-            <ui-appbar title=""></ui-appbar>
+            <div class="header">
+                <img class="logo" src="/static/img/unicode_symbol.svg">
+            </div>
             <ui-list @itemClick="toggle()">
                 <ui-list-item title="Unicode" to="/">
                     <ui-icon value="home" slot="left" />
                 </ui-list-item>
-                <ui-list-item title="常用特殊符号" to="/common">
+                <ui-list-item title="特殊符号" to="/common">
                     <ui-icon value="remove_red_eye" slot="left" />
                 </ui-list-item>
                 <ui-list-item title="颜文字" to="/emoticons">
@@ -15,7 +17,7 @@
                 <ui-list-item title="编码解码" to="/coding">
                     <ui-icon value="remove_red_eye" slot="left" />
                 </ui-list-item>
-                <ui-list-item title="关于" to="/about">
+                <ui-list-item title="关于" href="https://project.yunser.com/products/e7739c200e8a11e99f2863e9d9681573" target="_blank">
                     <ui-icon value="info" slot="left" />
                 </ui-list-item>
             </ui-list>
@@ -67,4 +69,19 @@
 </script>
 
 <style lang="scss" scoped>
+.header {
+    padding: 40px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+.logo {
+    display: block;
+    width: 80px;
+    margin: 0 auto;
+}
+.ui-position-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+}
 </style>

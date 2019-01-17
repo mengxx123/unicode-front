@@ -1,9 +1,11 @@
 <template>
     <my-page title="颜文字">
         <ul id="example-1" class="symbol-list">
-            <div>收集了 100+ 颜文字</div>
-            <li class="symbol-item" ng-model="symbols" v-for="symbol in symbols">
-                <span>{{symbol.text}}</span>
+            <!-- <div>收集了 100+ 颜文字</div> -->
+            <li class="symbol-item btn"
+                :data-clipboard-text="symbol.text" 
+                v-for="symbol in symbols">
+                <span>{{ symbol.text }}</span>
                 <!--<a class="copy" href="#" v-on:click="copySymbol">复制</a>-->
             </li>
         </ul>
@@ -12,6 +14,8 @@
 
 <script>
     import symbols from '../data/emoticons.json'
+    const ClipboardJS = window.ClipboardJS
+
     export default {
         data () {
             return {
@@ -19,6 +23,24 @@
             }
         },
         mounted() {
+            this.clipboard = new ClipboardJS('.btn')
+            this.clipboard.on('success', e => {
+                this.$message({
+                    type: 'success',
+                    text: '复制成功'
+                })
+                console.info('Action:', e.action)
+                console.info('Text:', e.text)
+                console.info('Trigger:', e.trigger)
+                e.clearSelection()
+            })
+            this.clipboard.on('error', e => {
+                console.error('Action:', e.action)
+                console.error('Trigger:', e.trigger)
+            })
+        },
+        destroyed() {
+            this.clipboard.destroy()
         }
     }
 </script>
@@ -26,19 +48,20 @@
 <style lang="scss" scoped>
     .symbol-list {
         overflow: hidden;
-    }
-    .symbol-list .symbol-item {
-        display: inline-block;
-        float: left;
-        width: 320px;
-        margin: 0 12px 13px 0;
-        background: #FFF;
-        text-align: center;
-        color: #293232;
-        border: 1px solid;
-        border-radius: 3px;
-        border-color: #E5E6E7 #E1E2E3 #DCDDDE;
-        font-size: 24px;
+        .symbol-item {
+            display: inline-block;
+            float: left;
+            width: 320px;
+            margin: 0 12px 13px 0;
+            background: #FFF;
+            text-align: center;
+            color: #293232;
+            border: 1px solid;
+            border-radius: 3px;
+            border-color: #E5E6E7 #E1E2E3 #DCDDDE;
+            font-size: 24px;
+            cursor: pointer;
+        }
     }
     .symbol-list span {
         line-height: 60px;

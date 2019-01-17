@@ -1,7 +1,7 @@
 <template>
     <my-page title="Unicode 查询" :page="_page">
         <section class="search-box">
-            <h2 class=title>特殊符号搜索（找符号、求出处、搜相似）</h2>
+            <h2 class=title>特殊符号搜索</h2>
             <ui-text-field v-model="keyword" hintText="输入一个字符或四位编号"/>
             <br>
             <div class="btns">
@@ -563,7 +563,7 @@
     .data-box {
         width: 100%;
         max-width: 400px;
-        z-index: 10000;
+        z-index: 100000000;
         .body {
             position: absolute;
             top: 64px;
@@ -577,7 +577,7 @@
     .result-box {
         width: 100%;
         max-width: 400px;
-        z-index: 10000;
+        z-index: 100000000;
         .body {
             position: absolute;
             top: 64px;
